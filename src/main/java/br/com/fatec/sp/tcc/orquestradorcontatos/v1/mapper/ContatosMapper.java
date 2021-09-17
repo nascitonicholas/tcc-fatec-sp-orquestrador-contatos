@@ -15,26 +15,35 @@ public interface ContatosMapper {
     @Named("mapListaContatosBdResponseToListaContatosResponse")
     default List<ContatosResponse> mapListaContatosBdResponseToListaContatosResponse(List<ContatosBdResponse.ContatosBd> contatosBdResponse) {
         List<ContatosResponse> response = new ArrayList<>();
-        int i = 1;
         contatosBdResponse.forEach(item -> {
-            if(Objects.nonNull(response)) {
+            if(Objects.isNull(response) || response.isEmpty()) {
+                ContatosResponse primeiroContato = new ContatosResponse();
+                primeiroContato.setId(Integer.toString(response.size() + 1));
+                primeiroContato.setNomeDivisao(item.getDivisoesModel().getNomeDivisao());
+                Contatos primeiroContatoParcial = new Contatos();
+                primeiroContatoParcial.setNomeSecao(item.getSecoesModel().getNomeSecao());
+                primeiroContatoParcial.setEmail(item.getEmail());
+                primeiroContatoParcial.setTelefone(item.getTelefone());
+                primeiroContato.getContatos().add(primeiroContatoParcial);
+                response.add(primeiroContato);
+            } else {
                 List<ContatosResponse> contatosResponsefilter = response.stream().filter(resposta ->
-                        resposta.getNomeDivisao().equalsIgnoreCase(item.getDivisoesModel().getNomeDivisao()))
-                                .collect(Collectors.toList());
-                if(Objects.nonNull(contatosResponsefilter)) {
+                                resposta.getNomeDivisao().equalsIgnoreCase(item.getDivisoesModel().getNomeDivisao()))
+                        .collect(Collectors.toList());
+                if(Objects.nonNull(contatosResponsefilter) && !contatosResponsefilter.isEmpty()) {
                     Contatos contato = new Contatos(item.getSecoesModel().getNomeSecao(),
-                                                    item.getEmail(), item.getTelefone());
+                            item.getEmail(), item.getTelefone());
                     response.stream().filter(resposta ->
-                            resposta.getNomeDivisao().equalsIgnoreCase(item.getDivisoesModel().getNomeDivisao()))
-                                    .findFirst().get().getContatos().add(contato);
+                                    resposta.getNomeDivisao().equalsIgnoreCase(item.getDivisoesModel().getNomeDivisao()))
+                            .findFirst().get().getContatos().add(contato);
                 } else {
                     Contatos contato = new Contatos(item.getSecoesModel().getNomeSecao(),
                             item.getEmail(), item.getTelefone());
                     List<Contatos> listaContatos = new ArrayList<>();
                     listaContatos.add(contato);
-                    ContatosResponse contatosResponse = new ContatosResponse(Integer.toString(i),
-                                                                             item.getDivisoesModel().getNomeDivisao(),
-                                                                             listaContatos);
+                    ContatosResponse contatosResponse = new ContatosResponse(Integer.toString(response.size() + 1),
+                            item.getDivisoesModel().getNomeDivisao(),
+                            listaContatos);
                     response.add(contatosResponse);
                 }
             }

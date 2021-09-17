@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,6 +18,6 @@ public class ContatosResponse {
     @JsonProperty("title")
     private String nomeDivisao;
     @JsonProperty("contatos")
-    private List<Contatos> contatos;
+    private List<Contatos> contatos = new ArrayList<>();
 
 }
